@@ -1,11 +1,11 @@
 function [udoutput, shadingmat] = undatable(inputfile,nsim,xfactor,bootpc,varargin)
-% [udoutput] = undatable(inputfile,nsim,xfactor,bootpc)
+% [udoutput, shadingmat] = undatable(inputfile,nsim,xfactor,bootpc)
 %
 % "Undatable" age-depth modelling software. 
 % Version 1.0 (2018-12-27). For deailed description, see:
 % Lougheed, B. C. and Obrochta, S. P. (2019), 
-% A rapid, deterministic age‐depth modelling routine for geological
-% sequences with inherent depth uncertainty.
+% "A rapid, deterministic age depth modelling routine for geological
+% sequences with inherent depth uncertainty."
 % Paleoceanography and Paleoclimatology. 
 % Accepted Author Manuscript. doi:10.1029/2018PA003457
 % https://doi.org/10.1029/2018PA003457
@@ -171,9 +171,9 @@ udoutput = [depthrange summarymat(:,1) summarymat(:,6) summarymat(:,2:5)]; % sum
 % Save output (if savemat selected)
 if savemat == 1 && guimode == 0
 	[~,writename,~] = fileparts(inputfile);
-	save([writedir,writename,'.mat'])
+	save([writedir,'/',writename,'.mat'])
 elseif guimode == 1
-	save([writedir,'guitemp.mat'])
+	save([writedir,'/guitemp.mat'])
 end
 
 
@@ -373,7 +373,7 @@ if plotme == 1
 		savename = strrep(inputfile,'.txt','_admodel.pdf');
 		[~,NAME,EXT] = fileparts(savename);
 		savename = [NAME,EXT];
-		savename = [writedir,savename];
+		savename = [writedir,'/',savename];
 		print(gcf, '-dpdf', '-painters', savename);
 	end
 end
