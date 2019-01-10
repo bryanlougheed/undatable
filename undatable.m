@@ -113,6 +113,13 @@ guimode = p.Results.guimode;
 allowreversal = p.Results.allowreversal;
 run1nsim = p.Results.run1nsim;
 
+% append / to writedir in case user forgot
+if isempty(writedir) == 0
+	if strcmp(writedir(end),'/')==0 && strcmp(writedir(end),'\')==0
+		writedir = [writedir,'/'];
+	end
+end
+
 % Check bootpc
 if bootpc < 0
 	bootpc = 0;
@@ -171,9 +178,9 @@ udoutput = [depthrange summarymat(:,1) summarymat(:,6) summarymat(:,2:5)]; % sum
 % Save output (if savemat selected)
 if savemat == 1 && guimode == 0
 	[~,writename,~] = fileparts(inputfile);
-	save([writedir,'/',writename,'.mat'])
+	save([writedir,writename,'.mat'])
 elseif guimode == 1
-	save([writedir,'/guitemp.mat'])
+	save([writedir,'guitemp.mat'])
 end
 
 
@@ -223,10 +230,10 @@ if plotme == 1
 	% Colour schemes
 	%                    1                   2                       3               4           5        6           7                8                9
 	datetypes = {'14C marine fossil'; '14C terrestrial fossil'; '14C sediment'; 'Tephra'; 'Tie point'; 'Other'; 'Palaeomagnetism'; 'Paleomagnetism'; 'U/Th'};
-	colours(:,:,1) = [41  128  185 ; 166 208 236]; % dark blue  ; light blue
+	colours(:,:,1) = [41  128 185  ; 166 208 236]; % dark blue  ; light blue
 	colours(:,:,2) = [34  153 85   ; 166 219 175]; % dark green ; light green
-	colours(:,:,3) = [83 57  47    ; 191 156 145]; % dark brown ; light brown
-	colours(:,:,4) = [192 57   43  ; 228 148 139]; % dark red   ; light red
+	colours(:,:,3) = [83  57  47   ; 191 156 145]; % dark brown ; light brown
+	colours(:,:,4) = [192 57  43   ; 228 148 139]; % dark red   ; light red
 	colours(:,:,5) = [254 194 0    ; 241 234 143]; % dark yellow; light yellow
 	colours(:,:,6) = [64  64  64   ; 160 160 160]; % dark grey  ; light grey
 	colours(:,:,7) = [201 106 18   ; 221 163 108]; % dark orange; light orange

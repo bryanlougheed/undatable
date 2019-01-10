@@ -64,7 +64,7 @@ summarymat = [allprctiles(:,[50, 100:end]), nanmean(tempage,2)]; % summarymat is
 savename = strrep(inputfile,'.txt','_admodel.txt');
 [~,NAME,EXT] = fileparts(savename);
 savename = [NAME,EXT];
-savename = [writedir,'/',savename];
+savename = [writedir,savename];
 
 if depthcombine == 1
 	comtag = 'Yes';
