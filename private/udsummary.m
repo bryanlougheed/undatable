@@ -69,7 +69,7 @@ savename = [writedir,savename];
 if depthcombine == 1
 	comtag = 'Yes';
 elseif depthcombine == 0
-	comtag = 'No';
+	comtag = 'No'; 
 end
 
 fid_output = fopen(savename,'w');

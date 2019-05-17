@@ -2,12 +2,11 @@ function [udoutput, shadingmat] = undatable(inputfile,nsim,xfactor,bootpc,vararg
 % [udoutput, shadingmat] = undatable(inputfile,nsim,xfactor,bootpc)
 %
 % "Undatable" age-depth modelling software. 
-% Version 1.0 (2018-12-27). For deailed description, see:
+% Version 1.1 (2019-02-26). For deailed description, see:
 % Lougheed, B. C. and Obrochta, S. P. (2019), 
-% "A rapid, deterministic age depth modelling routine for geological
+% "A rapid, deterministic age depth modeling routine for geological
 % sequences with inherent depth uncertainty."
-% Paleoceanography and Paleoclimatology. 
-% Accepted Author Manuscript. doi:10.1029/2018PA003457
+% Paleoceanography and Paleoclimatology, vol. 34, pp. 122-133.
 % https://doi.org/10.1029/2018PA003457
 %
 % ---- REQUIRED INPUT VARIABLES ----
