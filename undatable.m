@@ -114,7 +114,7 @@ run1nsim = p.Results.run1nsim;
 
 % append / to writedir in case user forgot
 if isempty(writedir) == 0
-	if strcmp(writedir(end),'/')==0 && strcmp(writedir(end),'\')==0
+	if strcmp(writedir(end),'/') == 0 && strcmp(writedir(end),'\') == 0
 		writedir = [writedir,'/'];
 	end
 end
@@ -142,10 +142,6 @@ else
 end
 
 % run age depth loop for the first time (without anchors)
-% disp(message1)
-% disp(' ')
-%save('testinput.mat','run1nsim', 'bootpc', 'xfactor', 'rundepth', 'rundepth1', 'rundepth2', 'rundepthpdf', 'runprob2sig', 'runboot', 'runncaldepth')
-%error('stop here')
 [agedepmat] = udrun(run1nsim, bootpc, xfactor, rundepth, rundepth1, rundepth2, rundepthpdf, runprob2sig, runboot, runncaldepth, udrunshuffle, allowreversal);
 
 % summarise the data
@@ -155,20 +151,18 @@ depthend = depth(end);
 [summarymat, shadingmat, depthrange] = udsummary(depthstart, depthend, run1nsim, agedepmat, interpinterval, inputfile, writedir, bootpc, xfactor, depthcombine);
 
 if mean(depth2 - depth1) ~= 0
-	% make anchors based on first run
-	% disp('Anchoring end points')
-	% disp(' ')
-	[rundepth, rundepth1, rundepth2, rundepthpdf, runprob2sig, runboot, runncaldepth] = udanchors(depthrange, depth, depth1, depth2, summarymat, rundepth, rundepth1, rundepth2, rundepthpdf, runprob2sig, runboot);
-	% run age depth loop for the second time with anchors
-	% disp('Running the final Monte Carlo age-depth loops with anchors')
-	% disp(' ')
 	
+	% make anchors based on first run
+	[rundepth, rundepth1, rundepth2, rundepthpdf, runprob2sig, runboot, runncaldepth] = udanchors(depthrange, depth, depth1, depth2, summarymat, rundepth, rundepth1, rundepth2, rundepthpdf, runprob2sig, runboot);
+	
+	% run age depth loop for the second time with anchors
 	[agedepmat] = udrun(nsim, bootpc, xfactor, rundepth, rundepth1, rundepth2, rundepthpdf, runprob2sig, runboot, runncaldepth, udrunshuffle, allowreversal);
+	
 	% summarise the data
 	[summarymat, shadingmat, depthrange] = udsummary(depthstart, depthend, nsim, agedepmat, interpinterval, inputfile, writedir, bootpc, xfactor, depthcombine);
 end
 
-if sum(isnan(agedepmat(:,1,:))) == numel(agedepmat(:,1,:));
+if sum(isnan(agedepmat(:,1,:))) == numel(agedepmat(:,1,:))
 	warning('All age-depth runs failed to produce an age-depth relationship. Check run settings (bootpc too high/low?). Also, your data may not be suitable or contain typos.')
 end
 
@@ -185,8 +179,7 @@ end
 
 %---PLOT STUFF
 if plotme == 1	
-	figure(1)
-	clf
+	figure
 	hold(gca,'on')
 	
 	% Plot density cloud
@@ -304,7 +297,6 @@ if plotme == 1
 	set(gca,'ydir','reverse','tickdir','out','fontsize',12,'box','on')
 	ylabel('Depth (cm)')
 	xlabel('Calendar age (ka BP)')
-	%title(strrep(inputfile,'.txt',''))
 	grid on
 	
 	% plot the depth error bars
@@ -333,9 +325,6 @@ if plotme == 1
 			plot(agedepmat(:,1,i)/1000,agedepmat(:,2,i),'r.','markersize',2)
 			hold on
 		end
-		% disp(['Age reversals in agedepmat: ',num2str(sum(find(diff(agedepmat(:,1,:))) < 0))])
-		% disp(['Depth reversals in agedepmat: ',num2str(sum(find(diff(agedepmat(:,2,:))) < 0))])
-		% disp(['Median age reverals in summarymat: ',num2str(sum(find(diff(summarymat(:,1)) < 0)))])
 	end
 	
 	udplotoptions % call udplotoptions.m to workspace
@@ -372,8 +361,7 @@ if plotme == 1
 	text(txtxpos,txtypos-txtyinc,['xfactor = ',num2str(xfactor,'%.2g')],'FontSize',textsize)
 	text(txtxpos,txtypos,['bootpc = ',num2str(bootpc,'%.2g')],'FontSize',textsize)
 	
-	
-	
+
 	% print
 	if printme == 1		
 		savename = strrep(inputfile,'.txt','_admodel.pdf');

@@ -15,8 +15,7 @@ replogical(:,2,:) = isnan(agedepmat(:,2,:));
 agedepmat(replogical) = linspace(-9999-numdeps, -9999, numdeps); % always in ascending order
 clear replogical
 
-% disp(['Interpolating depth to ',num2str(interpinterval),' depth unit'])
-% tic
+
 tempage = NaN(length(depthrange),nsim);
 
 % attempt to use faster precompiled binary
@@ -29,7 +28,7 @@ end
 if exist('err','var') == 1
 	warning(err.message)
 	disp('Compiling nakeinterp1.c will increase speed. Using slower interpolation')
-	for i = 1:nsim;
+	for i = 1:nsim
 		tempage(:,i) = interp1qr(agedepmat(:,2,i),agedepmat(:,1,i),depthrange);
 	end
 
@@ -39,26 +38,21 @@ end
 if exist('checkmex','var') == 1
 	if checkmex ~= 1
 		warning('nakeinterp1 binary found but needs to be recompiled (help mex)')
-		for i = 1:nsim;
+		for i = 1:nsim
 			tempage(:,i) = interp1qr(agedepmat(:,2,i),agedepmat(:,1,i),depthrange);
 		end
 	else
-		for i = 1:nsim;
+		for i = 1:nsim
 			tempage(:,i) = nakeinterp1(agedepmat(:,2,i),agedepmat(:,1,i),depthrange);
 		end
 	end
 end
 
-% toc
-% disp(' ')
-
-% disp('Creating probability density cloud')
-% tic
+% create probability density cloud
 allprctiles = prctile(tempage,[1:99, 100*(1-erf(2/sqrt(2)))/2, 100*(1-erf(1/sqrt(2)))/2, 100-100*(1-erf(1/sqrt(2)))/2, 100-100*(1-erf(2/sqrt(2)))/2] , 2);
 shadingmat = allprctiles(:,1:99);
 summarymat = [allprctiles(:,[50, 100:end]), nanmean(tempage,2)]; % summarymat is: median, 2siglo, 1siglo, 1sighi, 2sighi, mean
-% toc
-% disp(' ')
+
 
 % save to disk
 savename = strrep(inputfile,'.txt','_admodel.txt');

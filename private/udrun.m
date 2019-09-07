@@ -2,8 +2,7 @@ function [agedepmat] = udrun(nsim, bootpc, xfactor, rundepth, rundepth1, rundept
 
 % 1.0 ------- Sample age and depth PDFs and put them in agedepmat
 % create agedepmat. col1 = age, col2 = depth
-% disp('Sampling age-depth points')
-% tic
+
 agedepmat = NaN(runncaldepth,2,nsim); % space for intermediate points will be added in step 4.0
 for i = 1:length(rundepth)
 	% age
@@ -19,8 +18,7 @@ for i = 1:length(rundepth)
 		agedepmat(i,2,:) = repmat(rundepthpdf{i}(:,1),1,nsim);
 	end
 end
-% toc
-% disp(' ')
+
 
 
 % 2.0 ------ Bootstrap
@@ -44,8 +42,7 @@ end
 
 
 % 3.0 ------- Kick out reversals
-% disp('Checking for age-depth reversals')
-% tic
+
 if udrunshuffle == 1 % udrunshuffle is set in udmakepdfs
 	% shuffle all agedepmat rows
 	shufind = NaN(size(agedepmat,1),1,nsim);
@@ -61,6 +58,7 @@ if udrunshuffle == 1 % udrunshuffle is set in udmakepdfs
 	agedepmat = agedepmat(linind);
 	clear linind
 end
+
 % sort each nsim by sampled depth
 [m,n,p] = size(agedepmat);
 [~, rowind] = sort(agedepmat(:,2,:), 1);
@@ -68,6 +66,7 @@ linind = bsxfun(@plus, bsxfun(@plus, rowind, (0:n-1)*m), reshape((0:p-1)*m*n, 1,
 clear rowind
 agedepmat = agedepmat(linind);
 clear linind
+
 % age-depth reversal/repeat removal script
 agedepmat = flipdim(agedepmat,1); % working from bottom to top, in direction of sedimentation
 workingmat = agedepmat; 
@@ -123,14 +122,12 @@ elseif allowreversal == 1 % --> only remove repeats
 end
 agedepmat = workingmat;
 clear workingmat
-% toc
-% disp(' ')
+
 
 
 % 4.0 ------ Insert intermediate points (sed rate uncertainty)
 % disp('Calculating sedimentation rate uncertainty')
-% tic
-% Create int point matrix
+
 intmat = NaN(size(agedepmat,1)-1,2,nsim);
 for i = 1:size(intmat,1)
 	% disp([num2str(i/size(intmat,1)*100,'%.2f'),'%'])
@@ -156,14 +153,14 @@ for i = 1:size(intmat,1)
 		intmat(i,j,:) = intpts;
 	end
 end
+
 % now splice intmat and agedepmat together
 bigmatrix = NaN(size(agedepmat,1)+size(agedepmat,1)-1,2,nsim);
 bigmatrix(1:2:end,:,:) = agedepmat;
 bigmatrix(2:2:end-1,:,:) = intmat;
 agedepmat = bigmatrix;
 clear bigmatrix
-% toc
-% disp(' ')
+
 
 % flip before sending back to undatable
 agedepmat = flipdim(agedepmat,1);

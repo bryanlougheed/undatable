@@ -21,6 +21,12 @@ end
 %---CREATE CAL AGE PDFs
 
 medians = NaN(size(age,1),1);
+
+p68_2 = cell(1,size(age,1));
+p95_4 = cell(1,size(age,1));
+probtoplot = cell(1,size(age,1));
+prob2sig = cell(1,size(age,1));
+
 for j = 1:size(age,1)
 
 	if strcmpi(calcurve{j},'none') == 1 % create dists for calendar ages
@@ -76,32 +82,7 @@ runboot = dateboot(uni);
 runncaldepth = length(rundepth);
 udrunshuffle = 0;
 
-% old way, for each depth with multiple dates, combine their prob2:
-% if depthcombine == 1 && length(depth) > length(rundepth)
-% 	combdepths = unique(depth(diff(depth+depth1+depth2)==0),'stable');
-% 	for i = 1:length(combdepths)
-% 		theseprob2 = prob2sig(depth == combdepths(i));
-% 		for j = 1:length(theseprob2)
-% 			if j == 1
-% 				probtwos = theseprob2{j};
-% 			else
-% 				probtwos(end+1:end+size(theseprob2{j},1),:) = theseprob2{j};
-% 			end
-% 		end
-% 		uniques = unique(probtwos(:,1));
-% 		prob2out = NaN(size(uniques,1),2);
-% 		for j = 1:length(uniques)
-% 			prob2out(j,1) = uniques(j);
-% 			prob2out(j,2) = sum(probtwos(probtwos(:,1) == uniques(j),2));
-% 		end
-% 		prob2out = sortrows(prob2out,1);
-% 		runprob2sig{rundepth == combdepths(i)} = [prob2out(:,1), prob2out(:,2)/sum(prob2out(:,2))]; % normalise to between 0 and 1
-% 	end
-% elseif depthcombine == 0 && length(depth) > length(rundepth)
-% 	udrunshuffle = 1;
-% end
-
-% new way, for each date with multiple dates, combine their probtoplot and then do HPD, then calculate prob2 from that
+% for each date with multiple dates, combine their probtoplot and then do HPD, then calculate prob2 from that
 if depthcombine == 1 && length(depth) > length(rundepth)
 	combdepths = unique(depth(diff(depth+depth1+depth2)==0),'stable');
 	for i = 1:length(combdepths)
@@ -120,6 +101,7 @@ if depthcombine == 1 && length(depth) > length(rundepth)
 			proballout(j,2) = sum(proballi(proballi(:,1) == uniques(j),2));
 		end
 		proballout = sortrows(proballout,1);
+
 		% HPD intervals
 		if size(proballout,1) == 1 % uniform, 1 year, no need for HPD
 			runprob2sig = proballout;
@@ -131,7 +113,7 @@ if depthcombine == 1 && length(depth) > length(rundepth)
 			hpd95_4 = sortrows(hpd95_4,1);
 			ind2 = find(diff(hpd95_4(:,1)) > 1);
 			clear p95_4temp % just in case there was one already
-			if isempty(ind2) == 1;
+			if isempty(ind2) == 1
 				p95_4temp(1,1) = hpd95_4(end,1);
 				p95_4temp(1,2) = hpd95_4(1,1);
 				p95_4temp(1,3) = sum(hpd95_4(1:end,2));
@@ -153,6 +135,7 @@ if depthcombine == 1 && length(depth) > length(rundepth)
 					p95_4temp(z,3) = sum(hpd95_4(indy2(j-1):indy2(j),2));
 				end
 			end
+			
 			%take only 95.4% range(s)
 			prob2out=[];
 			for k=1:size(p95_4temp,1) % possible to have multiple 95.4 intervals
