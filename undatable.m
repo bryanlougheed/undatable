@@ -367,7 +367,7 @@ if plotme == 1
 		savename = strrep(inputfile,'.txt','_admodel.pdf');
 		[~,NAME,EXT] = fileparts(savename);
 		savename = [NAME,EXT];
-		savename = [writedir,'/',savename];
+		savename = [writedir,savename];
 		print(gcf, '-dpdf', '-painters', savename);
 	end
 end
