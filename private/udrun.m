@@ -20,10 +20,8 @@ for i = 1:length(rundepth)
 end
 
 
-
 % 2.0 ------ Bootstrap
-if sum(runboot) > 0
-	% 	disp('Applying bootstrapping process')
+if sum(runboot) > 0 && bootpc > 0
 	% 	tic
 	runorder = (1:size(agedepmat,1)); % Run # of all dates
 	bootind = runorder(runboot); % Run # of dates to be bootstrapped
@@ -58,7 +56,6 @@ if udrunshuffle == 1 % udrunshuffle is set in udmakepdfs
 	agedepmat = agedepmat(linind);
 	clear linind
 end
-
 % sort each nsim by sampled depth
 [m,n,p] = size(agedepmat);
 [~, rowind] = sort(agedepmat(:,2,:), 1);
@@ -66,6 +63,7 @@ linind = bsxfun(@plus, bsxfun(@plus, rowind, (0:n-1)*m), reshape((0:p-1)*m*n, 1,
 clear rowind
 agedepmat = agedepmat(linind);
 clear linind
+
 
 % age-depth reversal/repeat removal script
 agedepmat = flipdim(agedepmat,1); % working from bottom to top, in direction of sedimentation
@@ -124,7 +122,6 @@ agedepmat = workingmat;
 clear workingmat
 
 
-
 % 4.0 ------ Insert intermediate points (sed rate uncertainty)
 % disp('Calculating sedimentation rate uncertainty')
 
@@ -134,10 +131,13 @@ for i = 1:size(intmat,1)
 	for j = 1:2 % 1 = age, 2 = depth
 		% calc gaussian intpoints for all nsims for this age or depth pair
 		% fully vectorised way that is not possible using normpdf and randsample
-		% adtop = agedepmat(i+1,j,:); % upper bounds
-		% adbot = agedepmat(i,j,:); % lower bounds
-		adtop = min([agedepmat(i+1,j,:) agedepmat(i,j,:)]); % upper bounds
-		adbot = max([agedepmat(i+1,j,:) agedepmat(i,j,:)]); % lower bounds
+		if allowreversal == 0
+			adtop = agedepmat(i+1,j,:); % upper bounds
+			adbot = agedepmat(i,j,:); % lower bounds
+		elseif allowreversal == 1
+			adtop = min([agedepmat(i+1,j,:); agedepmat(i,j,:)],[],1,'includenan');
+			adbot = max([agedepmat(i+1,j,:); agedepmat(i,j,:)],[],1,'includenan');
+		end
 		meanmat = (adtop+adbot)/2; % mid points
 		diffmat = abs(adtop-adbot); % intervals
 		normmat = randn(size(meanmat)); % normal randoms (mu = 0, sig = 1)
@@ -153,14 +153,12 @@ for i = 1:size(intmat,1)
 		intmat(i,j,:) = intpts;
 	end
 end
-
 % now splice intmat and agedepmat together
 bigmatrix = NaN(size(agedepmat,1)+size(agedepmat,1)-1,2,nsim);
 bigmatrix(1:2:end,:,:) = agedepmat;
 bigmatrix(2:2:end-1,:,:) = intmat;
 agedepmat = bigmatrix;
 clear bigmatrix
-
 
 % flip before sending back to undatable
 agedepmat = flipdim(agedepmat,1);
