@@ -42,8 +42,10 @@ if exist('checkmex','var') == 1
 			tempage(:,i) = interp1qr(agedepmat(:,2,i),agedepmat(:,1,i),depthrange);
 		end
 	else
+		nakedepthrange = depthrange;
+		nakedepthrange(1) = nakedepthrange(1)+(10^-10);
 		for i = 1:nsim
-			tempage(:,i) = nakeinterp1(agedepmat(:,2,i),agedepmat(:,1,i),depthrange);
+			tempage(:,i) = nakeinterp1(agedepmat(:,2,i),agedepmat(:,1,i),nakedepthrange);
 		end
 	end
 end
