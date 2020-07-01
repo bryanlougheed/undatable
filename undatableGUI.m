@@ -333,7 +333,7 @@ for i = 1:length(depth)
 	
 	probnow = probtoplot{plotorder(i)};
 	
-	if ageerr(i) > 0
+	if ageerr(plotorder(i)) > 0
 		
 		% 2 sigma shading
 		for j=1:size(p95_4{plotorder(i)},1)
@@ -356,7 +356,7 @@ for i = 1:length(depth)
 		proby=[probnow(:,2)*((d(2)*probscale)/max(probnow(:,2)))+depth(plotorder(i),1); flipud(-1*probnow(:,2)*((d(2)*probscale)/max(probnow(:,2)))+depth(plotorder(i),1))];
 		h1=patch(probx,proby,[1 1 1],'edgecolor','k','facecolor','none','linewidth',.2);
 		
-	elseif ageerr(i) == 0
+	elseif ageerr(plotorder(i)) == 0
 		plot(age(i)/1000,depth(i),'kd','markeredgecolor',colours(1,:,colourind),'markerfacecolor',colours(1,:,colourind));
 	end
 	
