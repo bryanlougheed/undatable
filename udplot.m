@@ -1,3 +1,5 @@
+udplotoptions % call udplotoptions.m to workspace
+
 % plot dimensions in pixels
 figw = 560;
 axesl = 50;
@@ -5,7 +7,7 @@ axesw = 475;
 if plotsar == 1
 	figh = 700;
 	axesb = [275, 46];
-	axesh = [400, 215];
+	axesh = [375, 215];
 else
 	figh = 460;
 	axesb = 46;
@@ -14,8 +16,8 @@ end
 
 % convert pixel dimensions to relative units so plot can be resized
 axesl = axesl / figw;
-axesw = axesw / figw;
 axesb = axesb ./ figh;
+axesw = axesw / figw;
 axesh = axesh ./ figh;
 
 % center figure on primary monitor
@@ -148,9 +150,9 @@ for i = 1:length(depth)
 end
 plot(summarymat(:,1)/1000,depthrange,'r-') % median of age model runs (plot again on top of PDFs)
 set(gca,'ydir','reverse','tickdir','out','fontsize',12,'box','on')
-ylabel('Depth (cm)')
+ylabel(depthlabel)
 if plotsar == 0
-	xlabel('Age (ka)')
+	xlabel(agelabel)
 end
 grid on
 
@@ -173,7 +175,6 @@ if guimode == 0
 	title(NAME);
 end
 
-
 % plot all the agedepth runs (debug mode)
 if debugme == 1
 	for i = 1:size(agedepmat,3)
@@ -181,8 +182,6 @@ if debugme == 1
 		hold on
 	end
 end
-
-udplotoptions % call udplotoptions.m to workspace
 
 % set paper size (cm)f
 set(gcf,'PaperUnits','centimeters')
@@ -216,18 +215,13 @@ set(settingtext,'verticalalignment','bottom')
 % set all fonts
 set(findall(gcf,'-property','FontSize'),'FontSize',textsize)
 
-% embed probability cloud in the PDF as raster % DOESN'T WORK IN GUI VERSION YET
-if vcloud == 0
-	plot2raster(gca, hcloud, 'bottom', 300);
-end
 				% ----/// paste to here into undatableGUI.m
 
 % plot sediment accumulation rate
 if plotsar == 1
-	xlims = xlim;
-	xticks = get(gca,'xtick');
-	set(h_age,'xticklabel',[])
-	axes('position',[axesl , axesb(2) , axesw , axesh(2)])
+	set(h_age,'xaxislocation','top');
+	xlabel(agelabel)
+	h_sar = axes('position',[axesl , axesb(2) , axesw , axesh(2)]);
 	hold(gca,'on')
 	if ~isempty(sarshadingmat)
 		hcloud2 = gobjects(49,1);
@@ -248,34 +242,38 @@ if plotsar == 1
 			
 			confx = [
 				%right to left at top
-				sarsummarymat(1,2); sarsummarymat(1,2);
+				sarsummarymat(1,2)/1000; sarsummarymat(1,2)/1000;
 				%down to bottom
-				sarsummarymat(2:end,2);
+				sarsummarymat(2:end,2)/1000;
 				%left to right at bottom
-				sarsummarymat(end,2);
+				sarsummarymat(end,2)/1000;
 				%up to top
-				flipud(sarsummarymat(1:end-1,2))];
+				flipud(sarsummarymat(1:end-1,2))/1000];
 			
 			hcloud2(i) = patch(confx,confy,[1-(i/49) 1-(i/49) 1-(i/49)],'edgecolor','none');
 		end
-		stairs(sarsummarymat(:,2),sarsummarymat(:,4),'k--') % 95.4 range
-		stairs(sarsummarymat(:,2),sarsummarymat(:,7),'k--') % 95.4 range
-		stairs(sarsummarymat(:,2),sarsummarymat(:,5),'b--') % 68.2 range
-		stairs(sarsummarymat(:,2),sarsummarymat(:,6),'b--') % 68.2 range
+		stairs(sarsummarymat(:,2)/1000,sarsummarymat(:,4),'k--') % 95.4 range
+		stairs(sarsummarymat(:,2)/1000,sarsummarymat(:,7),'k--') % 95.4 range
+		stairs(sarsummarymat(:,2)/1000,sarsummarymat(:,5),'b--') % 68.2 range
+		stairs(sarsummarymat(:,2)/1000,sarsummarymat(:,6),'b--') % 68.2 range
 	end
-	stairs(sarsummarymat(:,2),sarsummarymat(:,3),'r-') % modeled SAR
-	set(gca,'xlim',xlims * 1000,'xtick',xticks * 1000, 'xticklabel', xticks,'tickdir','out','box','on')
-	xlabel('Age (ka)')
-	ylabel('Sediment Accumulation Rate (cm / ky)')
+	stairs(sarsummarymat(:,2)/1000,sarsummarymat(:,3),'r-') % modeled SAR
+	set(gca,'xlim',get(h_age,'xlim'),'xtick',get(h_age,'xtick'),'xticklabel',get(h_age,'xticklabel'),'tickdir','out','box','on')
+	xlabel(agelabel)
+	ylabel(sarlabel)
 	grid on
-	set(findall(gcf,'-property','FontSize'),'FontSize',textsize)
-	if vcloud == 0 & ~isempty(sarshadingmat)
-		plot2raster(gca, hcloud2, 'bottom', 300);
-	end
+
 end
+set(findall(gcf,'-property','FontSize'),'FontSize',textsize)
 
 % print
 if printme == 1
+	if vcloud == 0
+		plot2raster(h_age, hcloud, 'bottom', 300);
+		if ~isempty(sarshadingmat)
+			plot2raster(h_sar, hcloud2, 'bottom', 300);
+		end
+	end
 	savename = strrep(inputfile,'.txt','_admodel.pdf');
 	[~,NAME,EXT] = fileparts(savename);
 	savename = [NAME,EXT];

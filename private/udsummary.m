@@ -62,7 +62,11 @@ if sar == 0
 	sarshadingmat = [];
 elseif sar == 1
 	% diff the entire accumulation model
-	tempsar = diff(depthrange) ./ diff(tempage / 1000);
+	% tempsar = diff(depthrange) ./ diff(tempage / 1000);
+
+	% diff the 1:99 percentiles
+	tempsar = diff(depthrange) ./ diff(allprctiles / 1000);
+	
 	% 1 depth, 2 age, 3 median sed rate (from model), 4 2siglo, 5 1siglo, 6 1sighi, 7 2sighi
 	sarsummarymat = nan(size(tempsar,1),7);
 
@@ -70,9 +74,9 @@ elseif sar == 1
 	sarsummarymat(:,1:3) = [depthrange(1:end-1), summarymat(1:end-1,1), diff(depthrange) ./ diff(summarymat(:,1) / 1000)];
 		
 	% Need to look into this more, but long tail of impossibly high sedimentation rates so limiting to only <= 3x median
-	index = tempsar > 3 * sarsummarymat(:,3);
-	tempsar(index) = NaN;
-	% if nsim ~= 2000, save('tempsar.mat','tempsar'), end
+	% index = tempsar > 3 * sarsummarymat(:,3);
+	% tempsar(index) = NaN;
+	% if nsim ~= 2000, save('tempsar.mat','tempsar','tempage'), end
 	
 	% create probability density cloud for SARs
 	sarallprctiles = prctile(tempsar,[1:99, 100*(1-erf(2/sqrt(2)))/2, 100*(1-erf(1/sqrt(2)))/2, 100-100*(1-erf(1/sqrt(2)))/2, 100-100*(1-erf(2/sqrt(2)))/2] , 2);
