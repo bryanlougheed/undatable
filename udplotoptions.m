@@ -9,7 +9,9 @@ depthlabel = 'Depth (cm)';
 agelabel =  'Age (ka)';
 
 %% settings for the SAR plot
-if plotsar == 1
-	plotheight = plotheight * 1.5;	% The total height of both plots relative to plotheight to also accomodate SAR plot
+if exist('var','plotsar') == 1
+	if plotsar == 1
+		plotheight = plotheight * 1.5;	% The total height of both plots relative to plotheight to also accomodate SAR plot
+	end
 end
 sarlabel = 'SAR (cm kyr^{-1})';
