@@ -268,7 +268,7 @@ set(findall(gcf,'-property','FontSize'),'FontSize',textsize)
 
 % print
 if printme == 1
-	if vcloud == 0
+	if vcloud == 0 & plotsar == 1
 		plot2raster(h_age, hcloud, 'bottom', 300);
 		if ~isempty(sarshadingmat)
 			plot2raster(h_sar, hcloud2, 'bottom', 300);
