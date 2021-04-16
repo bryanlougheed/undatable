@@ -1,20 +1,20 @@
 function [rundepth, rundepth1, rundepth2, rundepthpdf, runprob2sig, runboot, runncaldepth] = udanchors(depthrange, depth, depth1, depth2, summarymat, rundepth, rundepth1, rundepth2, rundepthpdf, runprob2sig, runboot)
 
 % calculate bottom anchor
-P = polyfit(  depthrange(depthrange <= depth(end) & depthrange >= depth(end-2)), summarymat(depthrange <= depth(end) & depthrange >= depth(end-2) , 1), 1);
-botanchdepth = depth(end) + abs(depth(end) - depth(end-2));
+P = polyfit(  depthrange(depthrange <= rundepth(end) & depthrange >= rundepth(end-2)), summarymat(depthrange <= rundepth(end) & depthrange >= rundepth(end-2) , 1), 1);
+botanchdepth = rundepth(end) + abs(rundepth(end) - rundepth(end-2));
 botdepthpdf = {[botanchdepth 1]};
 botanchage = P(1)*botanchdepth + P(2);
-botancherr = (mean(summarymat(depthrange <= depth(end) & depthrange >= depth(end-2) , 4)) - mean(summarymat(depthrange <= depth(end) & depthrange >= depth(end-2) , 3))) / 2;
+botancherr = (mean(summarymat(depthrange <= rundepth(end) & depthrange >= rundepth(end-2) , 4)) - mean(summarymat(depthrange <= rundepth(end) & depthrange >= rundepth(end-2) , 3))) / 2;
 botanchpdf = normpdf(botanchage-3*botancherr:1:botanchage+3*botancherr,botanchage,botancherr);
 botanchpdf = {[[botanchage-3*botancherr:1:botanchage+3*botancherr]' [botanchpdf]']};
 
 % calculate top anchor
-P = polyfit(  depthrange(depthrange >= depth(1) & depthrange <= depth(3)), summarymat(depthrange >= depth(1) & depthrange <= depth(3) , 1), 1);
-topanchdepth = depth(1) - abs(depth(1) - depth(3));
+P = polyfit(  depthrange(depthrange >= rundepth(1) & depthrange <= rundepth(3)), summarymat(depthrange >= rundepth(1) & depthrange <= rundepth(3) , 1), 1);
+topanchdepth = rundepth(1) - abs(rundepth(1) - rundepth(3));
 topdepthpdf = {[topanchdepth 1]};
 topanchage = P(1)*topanchdepth + P(2);
-topancherr = (mean(summarymat(depthrange >= depth(1) & depthrange <= depth(3) , 4)) - mean(summarymat(depthrange >= depth(1) & depthrange <= depth(3) , 3))) / 2;
+topancherr = (mean(summarymat(depthrange >= rundepth(1) & depthrange <= rundepth(3) , 4)) - mean(summarymat(depthrange >= rundepth(1) & depthrange <= rundepth(3) , 3))) / 2;
 topanchpdf = normpdf(topanchage-3*topancherr:1:topanchage+3*topancherr,topanchage,topancherr);
 topanchpdf = {[[topanchage-3*topancherr:1:topanchage+3*topancherr]' topanchpdf']};
 
