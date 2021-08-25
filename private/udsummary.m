@@ -1,4 +1,4 @@
-function [summarymat, shadingmat, depthrange, sarsummarymat, sarshadingmat] = udsummary(depthstart, depthend, nsim, agedepmat, interpinterval, inputfile, writedir, bootpc, xfactor, depthcombine, sar)
+function [summarymat, shadingmat, depthrange, sarsummarymat, sarshadingmat] = udsummary(depthstart, depthend, nsim, agedepmat, interpinterval, inputfile, writedir, bootpc, xfactor, depthcombine, sar, savebigmat)
 
 %--- Summarise the data agedepmat data to discrete depth probabilities
 
@@ -115,6 +115,14 @@ elseif sar == 1
 	end
 end
 fclose(fid_output);
+
+
+% Save output (if savemat selected)
+if savebigmat == 1
+	[~,writename,~] = fileparts(inputfile);
+	writename = [writename '_bigmat'];
+	save([writedir,writename,'.mat'],'depthrange','tempage')
+end
 
 end % end function
 

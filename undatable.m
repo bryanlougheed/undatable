@@ -56,9 +56,21 @@ function [udoutput, shadingmat, sarsummarymat, sarshadingmat] = undatable(inputf
 % 'combine': Sum age PDFs with identical depth intervals
 % interval. 1 = Yes, 0 = No. (e.g.: 'combine',1 ) Default = 1.
 %
-% 'savemat' = Save a .mat file (yourinputname_output.mat)
+% 'savemat' : Save a .mat file (yourinputname_output.mat)
 % containing all the variables produced. 1 = Yes, 0 = No.
 % (e.g.: 'savemat',1 ) default = 0.
+% 
+% 'savebigmat' : Save a .mat file (yourinputname_bigmat.mat)
+% containg the variable 'tempage', which is the age results
+% for all model iterations. Its dimensions are depthrange x nsim,
+% where depthrange is top depth to bottom depth at a 1-cm interval and
+% nsim is the number of monte carlo iterations. This matrix
+% is usually discarded after calculating summary statistics because
+% its size can cause memory errors if retained. This is not yet
+% available in GUI mode. The save operation occurrs in udsummary.mat.
+% If savebigmat = 1, savemat is also set to 1;
+% 1 = Yes, 0 = No. (e.g.: 'savemat',1 ) default = 0.
+% 
 %
 % 'writedir': Change the directory to which output files
 % will by saved. (e.g.: 'writedir','myharddrive/somefolder/')
@@ -67,11 +79,11 @@ function [udoutput, shadingmat, sarsummarymat, sarshadingmat] = undatable(inputf
 % 'plotme' = Enable/disable the plot windows. 1 = Yes, 0 = No.
 % (e.g.: 'plotme',0) default = 1.
 %
-% 'printme' = Enable/disable the saving of the Adobe PDF file.
+% 'printme' : Enable/disable the saving of the Adobe PDF file.
 % 1 = Yes, 0 = No. (e.g.: 'printme',0) default = 1. Will revert
 % to 0 if the plot window is disabled.
 %
-% 'vcloud' = plot the probability density cloud using vector objects.
+% 'vcloud' : plot the probability density cloud using vector objects.
 % 1 = Yes, 0 = No, default = 0
 % This makes much larger PDF files but with slightly better quality.
 % Use this is you are not satisfied with graphics quality or if
@@ -104,6 +116,7 @@ defaultcombine = 1;
 defaultplotme = 1;
 defaultprintme = 1;
 defaultsavemat = 0;
+defaultsavebigmat = 0;
 defaultdebug = 0;
 defaultwritedir = '';
 defaultguimode = 0;
@@ -117,6 +130,7 @@ if datenum(version('-date')) > datenum('May 19, 2013')
 	addParameter(p,'plotme',defaultplotme,@isnumeric);
 	addParameter(p,'printme',defaultprintme,@isnumeric);
 	addParameter(p,'savemat',defaultsavemat,@isnumeric);
+	addParameter(p,'savebigmat',defaultsavebigmat,@isnumeric);
 	addParameter(p,'debug',defaultdebug,@isnumeric);
 	addParameter(p,'writedir',defaultwritedir,@isstr);
 	addParameter(p,'guimode',defaultguimode,@isnumeric);
@@ -130,6 +144,7 @@ else
 	addParamValue(p,'plotme',defaultplotme,@isnumeric);
 	addParamValue(p,'printme',defaultprintme,@isnumeric);
 	addParamValue(p,'savemat',defaultsavemat,@isnumeric);
+	addParamValue(p,'savebigmat',defaultsavebigmat,@isnumeric);
 	addParamValue(p,'debug',defaultdebug,@isnumeric);
 	addParamValue(p,'writedir',defaultwritedir,@isstr);
 	addParamValue(p,'guimode',defaultguimode,@isnumeric);
@@ -144,6 +159,7 @@ depthcombine=p.Results.combine;
 plotme = p.Results.plotme;
 printme = p.Results.printme;
 savemat = p.Results.savemat;
+savebigmat = p.Results.savebigmat;
 debugme = p.Results.debug;
 writedir = p.Results.writedir;
 guimode = p.Results.guimode;
@@ -189,7 +205,7 @@ agedepmat = udrun(run1nsim, bootpc, xfactor, rundepth, rundepth1, rundepth2, run
 interpinterval = 1;
 depthstart = depth(1);
 depthend = depth(end);
-[summarymat, shadingmat, depthrange, sarsummarymat, sarshadingmat] = udsummary(depthstart, depthend, run1nsim, agedepmat, interpinterval, inputfile, writedir, bootpc, xfactor, depthcombine, sar);
+[summarymat, shadingmat, depthrange, sarsummarymat, sarshadingmat] = udsummary(depthstart, depthend, run1nsim, agedepmat, interpinterval, inputfile, writedir, bootpc, xfactor, depthcombine, sar, savebigmat);
 
 if mean(depth2 - depth1) ~= 0
 	
@@ -200,7 +216,7 @@ if mean(depth2 - depth1) ~= 0
 	agedepmat = udrun(nsim, bootpc, xfactor, rundepth, rundepth1, rundepth2, rundepthpdf, runprob2sig, runboot, runncaldepth, udrunshuffle, allowreversal);
 	
 	% summarise the data
-	[summarymat, shadingmat, depthrange, sarsummarymat, sarshadingmat] = udsummary(depthstart, depthend, nsim, agedepmat, interpinterval, inputfile, writedir, bootpc, xfactor, depthcombine, sar);
+	[summarymat, shadingmat, depthrange, sarsummarymat, sarshadingmat] = udsummary(depthstart, depthend, nsim, agedepmat, interpinterval, inputfile, writedir, bootpc, xfactor, depthcombine, sar, savebigmat);
 end
 
 if sum(isnan(agedepmat(:,1,:))) == numel(agedepmat(:,1,:))
@@ -210,6 +226,10 @@ end
 udoutput = [depthrange summarymat(:,1) summarymat(:,6) summarymat(:,2:5)]; % summarymat is: median, 2siglo, 1siglo, 1sighi, 2sighi, mean
 
 % Save output (if savemat selected)
+if savebigmat == 1
+	savemat = 1;
+end
+
 if savemat == 1 && guimode == 0
 	[~,writename,~] = fileparts(inputfile);
 	save([writedir,writename,'.mat'])
