@@ -127,7 +127,7 @@ for i = 1:length(depth)
 			probindtemp = probnow(probnow(:,1)>p95_4{plotorder(i)}(j,2) & probnow(:,1)<p95_4{plotorder(i)}(j,1),:);
 			probx = [probindtemp(:,1)/1000; flipud(probindtemp(:,1)/1000)];
 			proby = [probindtemp(:,2)*((d(2)*probscale)/max(probnow(:,2)))+depth(plotorder(i),1); flipud(-1*probindtemp(:,2)*((d(2)*probscale)/max(probnow(:,2)))+depth(plotorder(i),1))];
-			h1 = patch(probx,proby,colours(2,:,colourind),'edgecolor','none');
+			patch(probx,proby,colours(2,:,colourind),'edgecolor','none');
 		end
 		
 		% 1 sigma shading
@@ -135,13 +135,13 @@ for i = 1:length(depth)
 			probindtemp = probnow(probnow(:,1)>p68_2{plotorder(i)}(j,2) & probnow(:,1)<p68_2{plotorder(i)}(j,1),:);
 			probx = [probindtemp(:,1)/1000; flipud(probindtemp(:,1)/1000)];
 			proby = [probindtemp(:,2)*((d(2)*probscale)/max(probnow(:,2)))+depth(plotorder(i),1); flipud(-1*probindtemp(:,2)*((d(2)*probscale)/max(probnow(:,2)))+depth(plotorder(i),1))];
-			h1 = patch(probx,proby,colours(1,:,colourind),'edgecolor','none');
+			patch(probx,proby,colours(1,:,colourind),'edgecolor','none');
 		end
 		
 		% Outline
 		probx = [probnow(:,1)/1000; flipud(probnow(:,1)/1000)];
 		proby = [probnow(:,2)*((d(2)*probscale)/max(probnow(:,2)))+depth(plotorder(i),1); flipud(-1*probnow(:,2)*((d(2)*probscale)/max(probnow(:,2)))+depth(plotorder(i),1))];
-		h1 = patch(probx,proby,[1 1 1],'edgecolor','k','facecolor','none','linewidth',.2);
+		patch(probx,proby,[1 1 1],'edgecolor','k','facecolor','none','linewidth',.2);
 		
 	else
 		plot(age(plotorder(i))/1000,depth(plotorder(i)),'kd','markeredgecolor',colours(1,:,colourind),'markerfacecolor',colours(1,:,colourind));
@@ -268,7 +268,7 @@ set(findall(gcf,'-property','FontSize'),'FontSize',textsize)
 
 % print
 if printme == 1
-	if vcloud == 0 & plotsar == 1
+	if vcloud == 0 && plotsar == 1
 		plot2raster(h_age, hcloud, 'bottom', 300);
 		if ~isempty(sarshadingmat)
 			plot2raster(h_sar, hcloud2, 'bottom', 300);
