@@ -121,7 +121,7 @@ fclose(fid_output);
 if savebigmat == 1
 	[~,writename,~] = fileparts(inputfile);
 	writename = [writename '_bigmat'];
-	save([writedir,writename,'.mat'],'depthrange','tempage')
+	save([writedir,writename,'.mat'],'-v7.3','depthrange','tempage')
 end
 
 end % end function
