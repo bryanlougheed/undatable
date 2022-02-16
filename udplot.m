@@ -172,6 +172,7 @@ if guimode == 0
 	[~,NAME,~] = fileparts(inputfile);
 	NAME = strrep(NAME,'.txt','');
 	NAME = strrep(NAME,'_udinput','');
+	NAME = strrep(NAME,'_','\_');
 	title(NAME);
 end
 
